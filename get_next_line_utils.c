@@ -6,7 +6,7 @@
 /*   By: amajid <amajid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/13 17:11:53 by amajid            #+#    #+#             */
-/*   Updated: 2023/11/17 17:35:35 by amajid           ###   ########.fr       */
+/*   Updated: 2023/11/18 15:30:44 by amajid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,17 +63,25 @@ long	ft_strlcpy(char *dst, const char *src, long dstsize)
 	return (i);
 }
 
-char gnl_init(t_vars *v)
+char	gnl_init(t_vars *v, char run_first)
 {
 	(*v).ret_buf = 0;
-	if ((*v).is_1_call && !(*v).buffer)
-		(*v) = (t_vars){.buffer = 0, .buffer_swap = 0, .is_1_call = 0, .i = 0, .j = 0, .start = 0, .read_ret = 0, .size = 1000000};
-	if (!(*v).is_1_call)
+	if ((*v).is_1_call && !(*v).buffer && run_first)
+		(*v) = (t_vars){.buffer = 0, .buffer_swap = 0, .is_1_call = 0,
+			.i = 0, .j = 0, .start = 0, .read_ret = 0, .size = 1000000};
+	if (!(*v).is_1_call && run_first)
 	{
 		(*v).size = 1000000;
 		(*v).buffer = malloc((*v).size);
 		if (!(*v).buffer)
-			return 0;
+			return (0);
 	}
-	return 1;
+	if ((*v).read_ret == -1 && !run_first)
+	{
+		free((*v).buffer);
+		(*v).buffer = NULL;
+		(*v).is_1_call = 1;
+		return (0);
+	}
+	return (1);
 }
